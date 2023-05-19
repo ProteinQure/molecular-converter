@@ -3,11 +3,16 @@ name = "molecular_converter"
 version = "0.1.0"
 description = "A CLI tool to seamlessly convert between various molecular file formats such as PDB, MOL2, mmCIF and many more."
 authors = ["Mark Fingerhuth <mark@proteinqure.com>"]
+packages = [
+    { include = "molecular_converter" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+biopython = "^1.81"
 
 [tool.poetry.dev-dependencies]
+pudb = "^2022.1.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
