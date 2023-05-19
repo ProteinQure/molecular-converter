@@ -7,35 +7,34 @@ Designed with a user-friendly interface, Molecular File Converter is crafted to 
 ## How to install
 
 The install the package dependencies run
-
 ```
 $ poetry install
 ```
 
 Then activate the
-
 ```
 $ poetry shell
 ```
-
 and you should be ready to go!
 
 ## How to convert
 
 You can find example input files in `data/mmcif_files` and `data/pdb_files`. Here's an example how to convert from mmCIF to PDB:
-
 ```
 $ molconverter data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
 ```
-
 which will create a new file called `converted_7lcj.pdb` in the current working directory.
+
+Alternatively, you can also run the script directly:
+```
+$ python3 molecular_converter/cli.py data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
+```
+
 
 ## How to test
 
 You can execute the test suite locally by running
-
 ```
 pytest .
 ```
-
 The tests can be found in the `tests/` directory.
