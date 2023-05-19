@@ -23,6 +23,15 @@ app = typer.Typer()
 def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     """
     Convert mmCIF to PDB format.
+
+    Parameters
+    ----------
+    ciffile : str
+        Path to mmCIF input file.
+    pdbfile : str
+        Path to PDB output file. Default is `{cif_file}.pdb`.
+    verbose : bool
+        Verbose output.
     """
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
 
@@ -54,4 +63,7 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
 
 
 def main():
+    """
+    Main entrypoint for the CLI.
+    """
     app()
