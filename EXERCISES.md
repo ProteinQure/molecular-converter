@@ -23,3 +23,7 @@ In the README the tool claims that it can do mmCIF->PDB as well as PDB->mmCIF co
 # Exercise #4
 
 When converting larger numbers of files you notice that the tool is quite slow. Analyse the code base, find the bottleneck(s) and improve its runtime!
+
+# Exercise #5
+
+If you happen to have extra time, let's make sure that this project is ready to be open-sourced: Clean up the code base as you see fit, ensure high code quality and maybe even implement a simple CI pipeline.

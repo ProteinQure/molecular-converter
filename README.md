@@ -25,7 +25,7 @@ and you should be ready to go!
 You can find example input files in `data/mmcif_files` and `data/pdb_files`. Here's an example how to convert from mmCIF to PDB:
 
 ```
-$ python3 cif2pdb.py ../data/mmcif_files/7lcj.cif converted_7lcj.pdb
+$ molconverter data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
 ```
 
 which will create a new file called `converted_7lcj.pdb` in the current working directory.
