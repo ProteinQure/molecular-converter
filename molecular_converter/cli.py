@@ -19,7 +19,8 @@ from molecular_converter.utils import int_to_chain, rename_chains
 
 app = typer.Typer()
 
-@app.command("mmcif_to_pdb")
+
+@app.command()
 def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     """
     Convert mmCIF to PDB format.
@@ -65,5 +66,12 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
 def main():
     """
     Main entrypoint for the CLI.
+    """
+    app()
+
+
+if __name__ == "__main__":
+    """
+    Main entrypoint for the script.
     """
     app()
