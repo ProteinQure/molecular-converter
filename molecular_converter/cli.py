@@ -8,6 +8,7 @@ Usage:
 import sys
 import argparse
 import logging
+from pathlib import Path
 from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
@@ -20,7 +21,7 @@ from molecular_converter.utils import int_to_chain, rename_chains
 app = typer.Typer()
 
 
-@app.command()
+@app.command("mmcif_to_pdb")
 def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     """
     Convert mmCIF to PDB format.
@@ -37,7 +38,7 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
 
     ciffile = cif_file
-    pdbfile = pdb_file or ciffile+".pdb"
+    pdbfile = pdb_file or cif_file.split(".")[0] + ".pdb"
     #Not sure why biopython needs this to read a cif file
     strucid = ciffile[:4] if len(ciffile)>4 else "1xxx"
 
@@ -61,6 +62,26 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     io = PDBIO()
     io.set_structure(structure)
     io.save(pdbfile)
+
+
+@app.command("multi_mmcif_to_pdb")
+def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = False):
+    """
+    Convert multiple mmCIF to PDB format in one run.
+
+    Parameters
+    ----------
+    dir_with_cif_files : str
+        Path to directory with multiple mmCIF input files.
+    out_dir : str
+        Output directory for PDB files.
+    verbose : bool
+        Verbose output.
+    """
+    out_dir = out_dir or Path.cwd()
+    for file in Path(cif_files_dir).iterdir():
+        if file.suffix == ".cif":
+            mmcif_to_pdb(cif_file=str(file), pdb_file=out_dir / f"{file.stem}.cif", verbose=verbose)
 
 
 def main():
