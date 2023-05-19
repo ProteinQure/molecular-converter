@@ -1,9 +1,9 @@
 
-def int_to_chain(i,base=62):
+def int_to_chain(i: int, base: int = 62) -> str:
     """
-    int_to_chain(int,int) -> str
     Converts a positive integer to a chain ID. Chain IDs include uppercase
     characters, numbers, and optionally lowercase letters.
+
     i = a positive integer to convert
     base = the alphabet size to include. Typically 36 or 62.
     """
