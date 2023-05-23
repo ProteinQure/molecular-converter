@@ -13,6 +13,7 @@ from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
+from Bio.PDB import PDBIO
 from Bio.PDB.mmcifio import MMCIFIO
 import typer
 
