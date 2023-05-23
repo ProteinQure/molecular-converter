@@ -116,9 +116,12 @@ def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = 
     todo
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(pdb_files_dir).iterdir():
-        if file.suffix == ".pdb":
-            pdb_to_mmcif(pdb_file=str(file), cif_file=str(out_dir) + '/' + f"{file.stem}.cif", verbose=verbose)
+
+    Parallel(n_jobs=-1)(
+        delayed(pdb_to_mmcif)(str(file), str(out_dir) + '/' + f"{file.stem}.cif", verbose)
+        for file in Path(pdb_files_dir).iterdir()
+        if file.suffix == ".pdb"
+    )
 
 
 def main():
