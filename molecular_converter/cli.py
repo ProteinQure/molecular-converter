@@ -12,7 +12,8 @@ from pathlib import Path
 from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
-from Bio.PDB import PDBIO
+from Bio.PDB.PDBParser import PDBParser
+from Bio.PDB.mmcifio import MMCIFIO
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
@@ -82,6 +83,38 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
     for file in Path(cif_files_dir).iterdir():
         if file.suffix == ".cif":
             mmcif_to_pdb(cif_file=str(file), pdb_file=out_dir + '/' + f"{file.stem}.cif", verbose=verbose)
+
+
+@app.command("pdb_to_mmcif")
+def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
+    """
+    todo
+    """
+    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
+
+    pdbfile = pdb_file
+    ciffile = cif_file or pdb_file.split('.')[0] + '.cif'
+    strucid = ciffile[:4] if len(ciffile)>4 else "1xxx"
+
+    # read pdb file
+    parser = PDBParser()
+    structure = parser.get_structure(strucid, pdbfile)
+
+    # write cif
+    io = MMCIFIO()
+    io.set_structure(structure)
+    io.save(ciffile)
+
+
+@app.command("multi_pdb_to_mmcif")
+def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
+    """
+    todo
+    """
+    out_dir = out_dir or Path.cwd()
+    for file in Path(pdb_files_dir).iterdir():
+        if file.suffix == ".pdb":
+            pdb_to_mmcif(pdb_file=str(file), cif_file=str(out_dir) + '/' + f"{file.stem}.cif", verbose=verbose)
 
 
 def main():
