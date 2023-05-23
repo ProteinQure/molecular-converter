@@ -15,6 +15,7 @@ from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB import PDBIO
 from Bio.PDB.mmcifio import MMCIFIO
+from joblib import Parallel, delayed
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
@@ -81,9 +82,11 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
         Verbose output.
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(cif_files_dir).iterdir():
-        if file.suffix == ".cif":
-            mmcif_to_pdb(cif_file=str(file), pdb_file=out_dir + '/' + f"{file.stem}.cif", verbose=verbose)
+    Parallel(n_jobs=-1)(
+            delayed(mmcif_to_pdb)(str(file), out_dir + '/' + f"{file.stem}.cif", verbose)
+            for file in Path(cif_files_dir).iterdir()
+            if file.suffix == ".cif"
+    )
 
 
 @app.command("pdb_to_mmcif")
