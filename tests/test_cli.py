@@ -33,7 +33,10 @@ def test_multi_mmcif_to_pdb_cli():
     molconverter = plumbum.local["molconverter"]
     with tempfile.TemporaryDirectory() as tmp_dir:
         molconverter[
-            "multi_mmcif_to_pdb", f"{PKG_DATA_DIR}/mmcif_files", "--out-dir", tmp_dir
+            "multi_mmcif_to_pdb",
+            f"{PKG_DATA_DIR}/mmcif_files",
+            "--out-dir",
+            tmp_dir,
         ]()
         num_input_files = len(
             [

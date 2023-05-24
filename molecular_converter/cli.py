@@ -103,9 +103,7 @@ def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
 
 @app.command("multi_mmcif_to_pdb")
 def multi_mmcif_to_pdb(
-    cif_files_dir: str,
-    out_dir: str = None,
-    verbose: bool = False
+    cif_files_dir: str, out_dir: str = None, verbose: bool = False
 ):
     """
     Convert multiple mmCIF to PDB format in one run.
@@ -124,7 +122,7 @@ def multi_mmcif_to_pdb(
         delayed(mmcif_to_pdb)(
             cif_file=str(file),
             pdb_file=f"{out_dir}/{file.stem}.cif",
-            verbose=verbose
+            verbose=verbose,
         )
         for file in Path(cif_files_dir).iterdir()
         if file.suffix == ".cif"
@@ -133,9 +131,7 @@ def multi_mmcif_to_pdb(
 
 @app.command("multi_pdb_to_mmcif")
 def multi_pdb_to_mmcif(
-    pdb_files_dir: str,
-    out_dir: str = None,
-    verbose: bool = False
+    pdb_files_dir: str, out_dir: str = None, verbose: bool = False
 ):
     """
     Convert multiple PDB files to mmCIF format in one run.
@@ -152,7 +148,9 @@ def multi_pdb_to_mmcif(
     out_dir = out_dir or Path.cwd()
     Parallel(n_jobs=-1)(
         delayed(pdb_to_mmcif)(
-            pdb_file=str(file), cif_file=f"{out_dir}/{file.stem}.pdb", verbose=verbose
+            pdb_file=str(file),
+            cif_file=f"{out_dir}/{file.stem}.pdb",
+            verbose=verbose,
         )
         for file in Path(pdb_files_dir).iterdir()
         if file.suffix == ".pdb"
