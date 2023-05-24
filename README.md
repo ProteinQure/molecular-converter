@@ -21,9 +21,14 @@ and you should be ready to go!
 
 You can find example input files in `data/mmcif_files` and `data/pdb_files`. Here's an example how to convert from mmCIF to PDB:
 ```
-$ molconverter data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
+$ molconverter mmcif_to_pdb data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
 ```
 which will create a new file called `converted_7lcj.pdb` in the current working directory.
+
+Alternatively, you can run the CLI script directly as such:
+```
+$ python3 molecular_converter/cli.py mmcif_to_pdb data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
+```
 
 ## How to test
 
