@@ -37,12 +37,15 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     verbose : bool
         Verbose output.
     """
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        level=logging.DEBUG if verbose else logging.WARN,
+    )
 
     ciffile = cif_file
     pdbfile = pdb_file or cif_file.split(".")[0] + ".pdb"
-    #Not sure why biopython needs this to read a cif file
-    strucid = ciffile[:4] if len(ciffile)>4 else "1xxx"
+    # Not sure why biopython needs this to read a cif file
+    strucid = ciffile[:4] if len(ciffile) > 4 else "1xxx"
 
     # Read file
     parser = MMCIFParser()
@@ -56,11 +59,11 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
         sys.exit(1)
 
     if verbose:
-        for new,old in chainmap.items():
+        for new, old in chainmap.items():
             if new != old:
-                logging.info("Renaming chain {0} to {1}".format(old,new))
+                logging.info("Renaming chain {0} to {1}".format(old, new))
 
-    #Write PDB
+    # Write PDB
     io = PDBIO()
     io.set_structure(structure)
     io.save(pdbfile)
@@ -80,18 +83,21 @@ def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
     verbose : bool
         Verbose output.
     """
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        level=logging.DEBUG if verbose else logging.WARN,
+    )
 
     ciffile = cif_file
     pdbfile = pdb_file or cif_file.split(".")[0] + ".pdb"
-    #Not sure why biopython needs this to read a cif file
-    strucid = ciffile[:4] if len(ciffile)>4 else "1xxx"
+    # Not sure why biopython needs this to read a cif file
+    strucid = ciffile[:4] if len(ciffile) > 4 else "1xxx"
 
     # Read file
     parser = PDBParser()
     structure = parser.get_structure(strucid, pdbfile)
 
-    #Write PDB
+    # Write PDB
     io = PDBIO()
     io.set_structure(structure)
     io.save(ciffile)
@@ -114,10 +120,8 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
     out_dir = out_dir or Path.cwd()
     Parallel(n_jobs=-1)(
         delayed(mmcif_to_pdb)(
-            cif_file=str(file),
-            pdb_file=f"{out_dir}/{file.stem}.cif",
-            verbose=verbose
-        ) 
+            cif_file=str(file), pdb_file=f"{out_dir}/{file.stem}.cif", verbose=verbose
+        )
         for file in Path(cif_files_dir).iterdir()
         if file.suffix == ".cif"
     )
@@ -140,9 +144,7 @@ def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = 
     out_dir = out_dir or Path.cwd()
     Parallel(n_jobs=-1)(
         delayed(pdb_to_mmcif)(
-            pdb_file=str(file),
-            cif_file=f"{out_dir}/{file.stem}.pdb",
-            verbose=verbose
+            pdb_file=str(file), cif_file=f"{out_dir}/{file.stem}.pdb", verbose=verbose
         )
         for file in Path(pdb_files_dir).iterdir()
         if file.suffix == ".pdb"

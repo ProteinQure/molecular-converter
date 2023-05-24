@@ -1,4 +1,3 @@
-
 def int_to_chain(i: int, base: int = 62) -> str:
     """
     Converts a positive integer to a chain ID. Chain IDs include uppercase
@@ -12,18 +11,18 @@ def int_to_chain(i: int, base: int = 62) -> str:
     if base < 0 or 62 < base:
         raise ValueError("Invalid base")
 
-    quot = int(i)//base
-    rem = i%base
+    quot = int(i) // base
+    rem = i % base
     if rem < 26:
-        letter = chr( ord("A") + rem)
+        letter = chr(ord("A") + rem)
     elif rem < 36:
-        letter = str( rem-26)
+        letter = str(rem - 26)
     else:
-        letter = chr( ord("a") + rem - 36)
+        letter = chr(ord("a") + rem - 36)
     if quot == 0:
         return letter
     else:
-        return int_to_chain(quot-1,base) + letter
+        return int_to_chain(quot - 1, base) + letter
 
 
 def rename_chains(structure):
@@ -36,9 +35,9 @@ def rename_chains(structure):
 
     Returns a map between new and old chain IDs, as well as modifying the input structure
     """
-    next_chain = 0 #
+    next_chain = 0  #
     # single-letters stay the same
-    chainmap = {c.id:c.id for c in structure.get_chains() if len(c.id) == 1}
+    chainmap = {c.id: c.id for c in structure.get_chains() if len(c.id) == 1}
     for o in structure.get_chains():
         if len(o.id) != 1:
             if o.id[0] not in chainmap:
