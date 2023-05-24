@@ -15,6 +15,7 @@ from joblib import Parallel, delayed
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB import PDBIO, PDBParser
+from joblib import Parallel, delayed
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
@@ -136,9 +137,11 @@ def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = 
         Verbose output.
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(pdb_files_dir).iterdir():
-        if file.suffix == ".pdb":
-            pdb_to_mmcif(pdb_file=str(file), cif_file=f"{out_dir}/{file.stem}.pdb", verbose=verbose)
+    Parallel(n_jobs=-1)(
+        delayed(pdb_to_mmcif)(str(file), f"{out_dir}/{file.stem}.pdb", verbose)
+        for file in Path(pdb_files_dir).iterdir()
+        if file.suffix == ".pdb"
+    )
 
 
 def main():
