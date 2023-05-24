@@ -25,12 +25,6 @@ $ molconverter data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
 ```
 which will create a new file called `converted_7lcj.pdb` in the current working directory.
 
-Alternatively, you can also run the script directly:
-```
-$ python3 molecular_converter/cli.py data/mmcif_files/7lcj.cif --pdb-file converted_7lcj.pdb
-```
-
-
 ## How to test
 
 You can execute the test suite locally by running
