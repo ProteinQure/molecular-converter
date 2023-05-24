@@ -10,15 +10,13 @@ import sys
 import logging
 from pathlib import Path
 
-from joblib import Parallel, delayed
-
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB import PDBIO, PDBParser
 from joblib import Parallel, delayed
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
-from molecular_converter.utils import int_to_chain, rename_chains
+from molecular_converter.utils import rename_chains
 
 app = typer.Typer()
 
@@ -104,7 +102,11 @@ def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
 
 
 @app.command("multi_mmcif_to_pdb")
-def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = False):
+def multi_mmcif_to_pdb(
+    cif_files_dir: str,
+    out_dir: str = None,
+    verbose: bool = False
+):
     """
     Convert multiple mmCIF to PDB format in one run.
 
@@ -120,7 +122,9 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
     out_dir = out_dir or Path.cwd()
     Parallel(n_jobs=-1)(
         delayed(mmcif_to_pdb)(
-            cif_file=str(file), pdb_file=f"{out_dir}/{file.stem}.cif", verbose=verbose
+            cif_file=str(file),
+            pdb_file=f"{out_dir}/{file.stem}.cif",
+            verbose=verbose
         )
         for file in Path(cif_files_dir).iterdir()
         if file.suffix == ".cif"
@@ -128,7 +132,11 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
 
 
 @app.command("multi_pdb_to_mmcif")
-def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
+def multi_pdb_to_mmcif(
+    pdb_files_dir: str,
+    out_dir: str = None,
+    verbose: bool = False
+):
     """
     Convert multiple PDB files to mmCIF format in one run.
 
