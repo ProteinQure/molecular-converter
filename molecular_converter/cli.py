@@ -11,6 +11,8 @@ import logging
 from pathlib import Path
 from typing_extensions import Annotated
 
+from joblib import Parallel, delayed
+
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB import PDBIO, PDBParser
 import typer
@@ -110,9 +112,13 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
         Verbose output.
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(cif_files_dir).iterdir():
-        if file.suffix == ".cif":
-            mmcif_to_pdb(cif_file=str(file), pdb_file=f"{out_dir}/{file.stem}.cif", verbose=verbose)
+    Parallel(n_jobs=-1)(
+        delayed(mmcif_to_pdb)(
+            cif_file=str(file),
+            pdb_file=f"{out_dir}/{file.stem}.cif",
+            verbose=verbose
+        ) for file in Path(cif_files_dir).iterdir() if file.suffix == ".cif"
+    )
 
 
 @app.command("multi_pdb_to_mmcif")
