@@ -64,6 +64,37 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
     io.save(pdbfile)
 
 
+@app.command("pdb_to_mmcif")
+def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
+    """
+    Convert PDB to mmCIF format.
+
+    Parameters
+    ----------
+    pdbfile : str
+        Path to PDB output file. Default is `{cif_file}.pdb`.
+    ciffile : str
+        Path to mmCIF input file.
+    verbose : bool
+        Verbose output.
+    """
+    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
+
+    ciffile = cif_file
+    pdbfile = pdb_file or cif_file.split(".")[0] + ".pdb"
+    #Not sure why biopython needs this to read a cif file
+    strucid = ciffile[:4] if len(ciffile)>4 else "1xxx"
+
+    # Read file
+    parser = PDBParser()
+    structure = parser.get_structure(strucid, pdbfile)
+
+    #Write PDB
+    io = PDBIO()
+    io.set_structure(structure)
+    io.save(ciffile)
+
+
 @app.command("multi_mmcif_to_pdb")
 def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = False):
     """
