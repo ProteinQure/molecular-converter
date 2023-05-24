@@ -21,7 +21,7 @@ pudb = "^2022.1.3"
 
 
 [tool.poetry.scripts]
-molconverter = "molecular_converter.cli:__main__"
+molconverter = "molecular_converter.cli:main"
 
 
 [build-system]
