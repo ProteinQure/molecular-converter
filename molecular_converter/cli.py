@@ -12,7 +12,7 @@ from pathlib import Path
 from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
-from Bio.PDB import PDBIO
+from Bio.PDB import PDBIO, PDBParser
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
@@ -82,6 +82,26 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
     for file in Path(cif_files_dir).iterdir():
         if file.suffix == ".cif":
             mmcif_to_pdb(cif_file=str(file), pdb_file=f"{out_dir}/{file.stem}.cif", verbose=verbose)
+
+
+@app.command("multi_pdb_to_mmcif")
+def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
+    """
+    Convert multiple PDB files to mmCIF format in one run.
+
+    Parameters
+    ----------
+    pdb_files_dir : str
+        Path to directory with multiple PDB input files.
+    out_dir : str
+        Output directory for mmCIF files.
+    verbose : bool
+        Verbose output.
+    """
+    out_dir = out_dir or Path.cwd()
+    for file in Path(pdb_files_dir).iterdir():
+        if file.suffix == ".pdb":
+            pdb_to_mmcif(pdb_file=str(file), cif_file=f"{out_dir}/{file.stem}.pdb", verbose=verbose)
 
 
 def main():
