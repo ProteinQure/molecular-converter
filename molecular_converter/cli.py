@@ -99,7 +99,7 @@ def pdb_to_mmcif(pdb_file: str, mmcif_file: str = None, verbose: bool = False):
     Parameters
     ----------
     pdb_file : str
-        Path to mmCIF input file.
+        Path to PDB input file.
     mmcif_file : str
         Path to mmcif output file. Default is `{pdb_file}.cif`.
     verbose : bool
@@ -112,7 +112,6 @@ def pdb_to_mmcif(pdb_file: str, mmcif_file: str = None, verbose: bool = False):
 
     ciffile = pdb_file
     pdbfile = mmcif_file or pdb_file.split(".")[0] + ".pdb"
-    # Not sure why biopython needs this to read a cif file
     strucid = ciffile[:4] if len(ciffile) > 4 else "1xxx"
 
     # Read file
@@ -153,10 +152,10 @@ def multi_mmcif_to_pdb(pdb_files_dir: str, out_dir: str = None, verbose: bool = 
     """
     out_dir = out_dir or Path.cwd()
     for file in Path(pdb_files_dir).iterdir():
-        if file.suffix == ".cif":
+        if file.suffix == ".pdb":
             pdb_to_mmcif(
                 cif_file=str(file),
-                pdb_file=f"{out_dir}/{file.stem}.cif",
+                pdb_file=f"{out_dir}/{file.stem}.pdb",
                 verbose=verbose,
             )
 
