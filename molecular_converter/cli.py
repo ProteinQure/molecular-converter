@@ -113,13 +113,17 @@ def multi_pdb_to_mmcif(
         Verbose output.
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(pdb_files_dir).iterdir():
-        if file.suffix == ".pdb":
-            pdb_to_mmcif(
-                pdb_file=file,
-                cif_file=out_dir / f"{file.stem}.cif",
-                verbose=verbose,
-            )
+    kwargs = (
+        {"pdb_file": file, "cif_file": out_dir / f"{file.stem}.cif", "verbose": verbose}
+        for file in Path(pdb_files_dir).iterdir()
+        if file.suffix == ".pdb"
+    )
+    with Pool(processes=cpu_count()) as pool:
+        for kw in kwargs:
+            pool.apply_async(pdb_to_mmcif, kwds=kw)
+        pool.close()
+        pool.join()
+
 
 
 @app.command("pdb_to_mmcif")
