@@ -87,7 +87,33 @@ def multi_mmcif_to_pdb(
         if file.suffix == ".cif":
             mmcif_to_pdb(
                 cif_file=file,
-                pdb_file=out_dir / f"{file.stem}.cif",
+                pdb_file=out_dir / f"{file.stem}.pdb",
+                verbose=verbose,
+            )
+
+
+@app.command("multi_pdb_to_mmcif")
+def multi_pdb_to_mmcif(
+    pdb_files_dir: Path, out_dir: Path = None, verbose: bool = False
+):
+    """
+    Convert multiple PDB files to mmCIF format in one run.
+
+    Parameters
+    ----------
+    dir_with_cif_files : Path
+        Path to directory with multiple PDB input files.
+    out_dir : str
+        Output directory for mmCIF files.
+    verbose : bool
+        Verbose output.
+    """
+    out_dir = out_dir or Path.cwd()
+    for file in Path(pdb_files_dir).iterdir():
+        if file.suffix == ".cif":
+            pdb_to_mmcif(
+                pdb_file=file,
+                cif_file=out_dir / f"{file.stem}.cif",
                 verbose=verbose,
             )
 
