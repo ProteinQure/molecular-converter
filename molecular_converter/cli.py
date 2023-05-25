@@ -91,6 +91,76 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
             )
 
 
+@app.command("pdb_to_mmcif")
+def pdb_to_mmcif(pdb_file: str, mmcif_file: str = None, verbose: bool = False):
+    """
+    Convert PDB to mmcif format.
+
+    Parameters
+    ----------
+    pdb_file : str
+        Path to mmCIF input file.
+    mmcif_file : str
+        Path to mmcif output file. Default is `{pdb_file}.cif`.
+    verbose : bool
+        Verbose output.
+    """
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        level=logging.DEBUG if verbose else logging.WARN,
+    )
+
+    ciffile = pdb_file
+    pdbfile = mmcif_file or pdb_file.split(".")[0] + ".pdb"
+    # Not sure why biopython needs this to read a cif file
+    strucid = ciffile[:4] if len(ciffile) > 4 else "1xxx"
+
+    # Read file
+    parser = MMCIFParser()
+    structure = parser.get_structure(strucid, ciffile)
+
+    # rename long chains
+    try:
+        chainmap = rename_chains(structure)
+    except OutOfChainsError:
+        logging.error("Too many chains to represent in PDB format")
+        sys.exit(1)
+
+    if verbose:
+        for new, old in chainmap.items():
+            if new != old:
+                logging.info("Renaming chain {0} to {1}".format(old, new))
+
+    # Write PDB
+    io = PDBIO()
+    io.set_structure(structure)
+    io.save(pdbfile)
+
+
+@app.command("multi_pdb_to_mmcif")
+def multi_mmcif_to_pdb(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
+    """
+    Convert multiple PDB to mmcif format in one run.
+
+    Parameters
+    ----------
+    pdb_files_dir : str
+        Path to directory with multiple mmCIF input files.
+    out_dir : str
+        Output directory for PDB files.
+    verbose : bool
+        Verbose output.
+    """
+    out_dir = out_dir or Path.cwd()
+    for file in Path(pdb_files_dir).iterdir():
+        if file.suffix == ".cif":
+            pdb_to_mmcif(
+                cif_file=str(file),
+                pdb_file=f"{out_dir}/{file.stem}.cif",
+                verbose=verbose,
+            )
+
+
 def main():
     """
     Main entrypoint for the CLI.
