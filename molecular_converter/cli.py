@@ -85,13 +85,13 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
         Verbose output.
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(cif_files_dir).iterdir():
-        if file.suffix == ".cif":
-            mmcif_to_pdb(
-                cif_file=str(file),
-                pdb_file=f"{out_dir}/{file.stem}.cif",
-                verbose=verbose,
-            )
+    Parallel(n_jobs=8)(
+        delayed(mmcif_to_pdb)(
+            cif_file=str(file), pdb_file=f"{out_dir}/{file.stem}.pdb", verbose=verbose
+        )
+        for file in Path(cif_files_dir).iterdir()
+        if file.suffix == ".cif"
+    )
 
 
 @app.command("pdb_to_mmcif")
