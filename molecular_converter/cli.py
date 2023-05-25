@@ -6,7 +6,6 @@ Usage:
 """
 
 import sys
-import argparse
 import logging
 from pathlib import Path
 from typing_extensions import Annotated
@@ -22,25 +21,28 @@ app = typer.Typer()
 
 
 @app.command("mmcif_to_pdb")
-def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
+def mmcif_to_pdb(cif_file: Path, pdb_file: Path = None, verbose: bool = False):
     """
     Convert mmCIF to PDB format.
 
     Parameters
     ----------
-    ciffile : str
+    ciffile : Path
         Path to mmCIF input file.
-    pdbfile : str
+    pdbfile : Path
         Path to PDB output file. Default is `{cif_file}.pdb`.
     verbose : bool
         Verbose output.
     """
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG if verbose else logging.WARN)
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        level=logging.DEBUG if verbose else logging.WARN,
+    )
 
     ciffile = cif_file
-    pdbfile = pdb_file or cif_file.split(".")[0] + ".pdb"
-    #Not sure why biopython needs this to read a cif file
-    strucid = ciffile[:4] if len(ciffile)>4 else "1xxx"
+    pdbfile = str(pdb_file) or f"{cif_file.stem}.pdb"
+    # Not sure why biopython needs this to read a cif file
+    strucid = ciffile.stem if len(str(ciffile)) > 4 else "1xxx"
 
     # Read file
     parser = MMCIFParser()
@@ -54,24 +56,26 @@ def mmcif_to_pdb(cif_file: str, pdb_file: str = None, verbose: bool = False):
         sys.exit(1)
 
     if verbose:
-        for new,old in chainmap.items():
+        for new, old in chainmap.items():
             if new != old:
-                logging.info("Renaming chain {0} to {1}".format(old,new))
+                logging.info("Renaming chain {0} to {1}".format(old, new))
 
-    #Write PDB
+    # Write PDB
     io = PDBIO()
     io.set_structure(structure)
     io.save(pdbfile)
 
 
 @app.command("multi_mmcif_to_pdb")
-def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = False):
+def multi_mmcif_to_pdb(
+    cif_files_dir: Path, out_dir: Path = None, verbose: bool = False
+):
     """
     Convert multiple mmCIF to PDB format in one run.
 
     Parameters
     ----------
-    dir_with_cif_files : str
+    dir_with_cif_files : Path
         Path to directory with multiple mmCIF input files.
     out_dir : str
         Output directory for PDB files.
@@ -81,10 +85,14 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
     out_dir = out_dir or Path.cwd()
     for file in Path(cif_files_dir).iterdir():
         if file.suffix == ".cif":
-            mmcif_to_pdb(cif_file=str(file), pdb_file=out_dir / f"{file.stem}.cif", verbose=verbose)
+            mmcif_to_pdb(
+                cif_file=file,
+                pdb_file=out_dir / f"{file.stem}.cif",
+                verbose=verbose,
+            )
 
 
-def main():
+def __main__():
     """
     Main entrypoint for the CLI.
     """
