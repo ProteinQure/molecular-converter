@@ -68,4 +68,4 @@ def test_multi_pdb_to_mmcif_cli():
         # ensure correct number of output files
         assert len(list(Path(tmp_dir).iterdir())) == num_input_files
         # make sure all output files have the .cif suffix
-        assert all([file for file in Path(tmp_dir).iterdir() if file.suffix == ".cif" and ".pdb" not in file])
+        assert all([file for file in Path(tmp_dir).iterdir() if file.suffix == ".cif" and ".pdb" not in file.name])

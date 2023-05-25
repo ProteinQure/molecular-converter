@@ -111,7 +111,7 @@ def multi_pdb_to_mmcif(
     """
     out_dir = out_dir or Path.cwd()
     for file in Path(pdb_files_dir).iterdir():
-        if file.suffix == ".cif":
+        if file.suffix == ".pdb":
             pdb_to_mmcif(
                 pdb_file=file,
                 cif_file=out_dir / f"{file.stem}.cif",
