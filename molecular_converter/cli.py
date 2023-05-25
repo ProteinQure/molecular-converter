@@ -11,7 +11,8 @@ from pathlib import Path
 from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
-from Bio.PDB import PDBIO
+from Bio.PDB import PDBIO, PDBParser
+from Bio.PDB.mmcifio import MMCIFIO
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
@@ -90,6 +91,41 @@ def multi_mmcif_to_pdb(
                 pdb_file=out_dir / f"{file.stem}.cif",
                 verbose=verbose,
             )
+
+
+@app.command("pdb_to_mmcif")
+def pdb_to_mmcif(pdb_file: Path, cif_file: Path = None, verbose: bool = False):
+    """
+    Convert PDB to mmCIF format.
+
+    Parameters
+    ----------
+    pdbfile : Path
+        Path to PDB input file.
+    ciffile : Path
+        Path to mmCIF output file. Default is `{pdb_file}.pdb`.
+    verbose : bool
+        Verbose output.
+    """
+    # TODO: DRY?
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        level=logging.DEBUG if verbose else logging.WARN,
+    )
+
+    pdbfile = pdb_file
+    cifffile = str(cif_file) or f"{pdb_file.stem}.pdb"
+    # Not sure why biopython needs this to read a cif file
+    strucid = pdbfile.stem if len(str(pdbfile)) > 4 else "1xxx"
+
+    # Read file
+    parser = PDBParser()
+    structure = parser.get_structure(strucid, pdbfile)
+
+    # Write mmCIF
+    io = MMCIFIO()
+    io.set_structure(structure)
+    io.save(cifffile)
 
 
 def __main__():

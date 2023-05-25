@@ -16,7 +16,29 @@ def test_mmcif_to_pdb_cli():
     molconverter = plumbum.local["molconverter"]
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = f"{tmp_dir}/converted_7lcj.pdb"
-        molconverter["mmcif_to_pdb", f"{PKG_DATA_DIR}/mmcif_files/7lcj.cif", "--pdb-file", outfile]()
+        molconverter[
+            "mmcif_to_pdb",
+            f"{PKG_DATA_DIR}/mmcif_files/7lcj.cif",
+            "--pdb-file",
+            outfile,
+        ]()
+        assert Path(outfile).exists()
+        assert Path(outfile).is_file()
+
+
+def test_pdb_to_mmcif_cli():
+    """
+    Testing the conversion of PDB to mmCIF.
+    """
+    molconverter = plumbum.local["molconverter"]
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        outfile = f"{tmp_dir}/converted_7lcj.cif"
+        molconverter[
+            "pdb_to_mmcif",
+            f"{PKG_DATA_DIR}/pdb_files/7lcj.pdb",
+            "--cif-file",
+            outfile,
+        ]()
         assert Path(outfile).exists()
         assert Path(outfile).is_file()
 
