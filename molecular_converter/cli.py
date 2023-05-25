@@ -12,7 +12,9 @@ from pathlib import Path
 from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
+from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB import PDBIO
+from Bio.PDB.mmcifio import MMCIFIO
 import typer
 
 from molecular_converter.exceptions import OutOfChainsError
@@ -92,7 +94,7 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
 
 
 @app.command("pdb_to_mmcif")
-def pdb_to_mmcif(pdb_file: str, mmcif_file: str = None, verbose: bool = False):
+def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
     """
     Convert PDB to mmcif format.
 
@@ -110,34 +112,23 @@ def pdb_to_mmcif(pdb_file: str, mmcif_file: str = None, verbose: bool = False):
         level=logging.DEBUG if verbose else logging.WARN,
     )
 
-    ciffile = pdb_file
-    pdbfile = mmcif_file or pdb_file.split(".")[0] + ".pdb"
-    strucid = ciffile[:4] if len(ciffile) > 4 else "1xxx"
+    pdbfile = pdb_file
+    ciffile = cif_file or pdb_file.split(".")[0] + ".cif"
+    # Not sure why biopython needs this to read a cif file
+    strucid = pdbfile[:4] if len(pdbfile) > 4 else "1xxx"
 
     # Read file
-    parser = MMCIFParser()
-    structure = parser.get_structure(strucid, ciffile)
+    parser = PDBParser()
+    structure = parser.get_structure(strucid, pdbfile)
 
-    # rename long chains
-    try:
-        chainmap = rename_chains(structure)
-    except OutOfChainsError:
-        logging.error("Too many chains to represent in PDB format")
-        sys.exit(1)
-
-    if verbose:
-        for new, old in chainmap.items():
-            if new != old:
-                logging.info("Renaming chain {0} to {1}".format(old, new))
-
-    # Write PDB
-    io = PDBIO()
+    # Write mmcif
+    io = MMCIFIO()
     io.set_structure(structure)
-    io.save(pdbfile)
+    io.save(ciffile)
 
 
 @app.command("multi_pdb_to_mmcif")
-def multi_mmcif_to_pdb(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
+def multi_pdb_to_mmcif(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
     """
     Convert multiple PDB to mmcif format in one run.
 
