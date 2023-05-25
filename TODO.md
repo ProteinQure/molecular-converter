@@ -1,0 +1,5 @@
+- [ ] Clean up `scripts/`
+- [ ] More tests?
+- [ ] DRY the CLI code?
+- [ ] Data directory should be relative to CWD (not __file__)
+- [ ] Doc strings (format)
