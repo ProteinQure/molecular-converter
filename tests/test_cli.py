@@ -54,4 +54,18 @@ def test_multi_mmcif_to_pdb_cli():
         # ensure correct number of output files
         assert len(list(Path(tmp_dir).iterdir())) == num_input_files
         # make sure all output files have the .pdb suffix
-        assert all([file for file in Path(tmp_dir).iterdir() if file.suffix == ".pdb" and ".cif" not in file])
+        assert all([file for file in Path(tmp_dir).iterdir() if file.suffix == ".pdb" and ".cif" not in file.name])
+
+
+def test_multi_pdb_to_mmcif_cli():
+    """
+    Testing the conversion of multiple PDB to mmCIF files in one run.
+    """
+    molconverter = plumbum.local["molconverter"]
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        molconverter["multi_pdb_to_mmcif", f"{PKG_DATA_DIR}/pdb_files", "--out-dir", tmp_dir]()
+        num_input_files = len([file for file in (PKG_DATA_DIR / "pdb_files").iterdir() if file.suffix == ".pdb"])
+        # ensure correct number of output files
+        assert len(list(Path(tmp_dir).iterdir())) == num_input_files
+        # make sure all output files have the .cif suffix
+        assert all([file for file in Path(tmp_dir).iterdir() if file.suffix == ".cif" and ".pdb" not in file])
