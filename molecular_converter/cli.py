@@ -7,8 +7,8 @@ Usage:
 
 import sys
 import logging
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
-from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB import PDBIO, PDBParser
@@ -84,13 +84,16 @@ def multi_mmcif_to_pdb(
         Verbose output.
     """
     out_dir = out_dir or Path.cwd()
-    for file in Path(cif_files_dir).iterdir():
-        if file.suffix == ".cif":
-            mmcif_to_pdb(
-                cif_file=file,
-                pdb_file=out_dir / f"{file.stem}.pdb",
-                verbose=verbose,
-            )
+    kwargs = (
+        {"cif_file": file, "pdb_file": out_dir / f"{file.stem}.pdb", "verbose": verbose}
+        for file in Path(cif_files_dir).iterdir()
+        if file.suffix == ".cif"
+    )
+    with Pool(processes=cpu_count()) as pool:
+        for kw in kwargs:
+            pool.apply_async(mmcif_to_pdb, kwds=kw)
+        pool.close()
+        pool.join()
 
 
 @app.command("multi_pdb_to_mmcif")
