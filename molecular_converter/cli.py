@@ -12,6 +12,8 @@ from pathlib import Path
 from typing_extensions import Annotated
 
 from Bio.PDB.MMCIFParser import MMCIFParser
+from Bio.PDB.PDBParser import PDBParser
+from Bio.PDB.mmcifio import MMCIFIO
 from Bio.PDB import PDBIO
 import typer
 
@@ -91,6 +93,38 @@ def multi_mmcif_to_pdb(cif_files_dir: str, out_dir: str = None, verbose: bool = 
                 pdb_file=out_dir / file_path,
                 verbose=verbose,
             )
+
+
+@app.command("pdb_to_mmcif")
+def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
+    """
+    Convert PDB to mmCIF format.
+
+    Parameters
+    ----------
+    pdbfile : str
+        Path to PDB input file.
+    mmciffile : str
+        Path to mmCIF output file. Default is `{pdb_file}.cif`.
+    verbose : bool
+        Verbose output.
+    """
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        level=logging.DEBUG if verbose else logging.WARN,
+    )
+
+    file_name = cif_file or pdb_file.split(".")[0] + ".cif"
+    struct_id = pdb_file[:4] if len(pdb_file) > 4 else "1xxx"
+    # Read file
+    parser = PDBParser()
+    structure = parser.get_structure(struct_id, pdb_file)
+
+    # Write mmCIF
+    io = MMCIFIO()
+    io.set_structure(structure)
+
+    io.save(str(file_name))
 
 
 def main():
