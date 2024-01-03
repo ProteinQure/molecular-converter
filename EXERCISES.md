@@ -36,7 +36,7 @@ Some of your users complain that converting larger numbers of files takes too mu
 
 ```
 $ molconverter multi_mmcif_to_pdb data/mmcif_files --out-dir data/out
-$ molconverter multi_pdb_to_mmcif data/mmcif_files --out-dir data/out
+$ molconverter multi_pdb_to_mmcif data/pdb_files --out-dir data/out
 ```
 
 Analyse the code base, find the bottleneck(s) and improve the CLI runtime!
