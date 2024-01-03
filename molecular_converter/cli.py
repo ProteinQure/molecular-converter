@@ -16,6 +16,7 @@ from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB.mmcifio import MMCIFIO
 from Bio.PDB import PDBIO
 import typer
+import os
 
 from molecular_converter.exceptions import OutOfChainsError
 from molecular_converter.utils import int_to_chain, rename_chains
@@ -125,6 +126,33 @@ def pdb_to_mmcif(pdb_file: str, cif_file: str = None, verbose: bool = False):
     io.set_structure(structure)
 
     io.save(str(file_name))
+
+
+@app.command("multi_pdb_to_mmcif")
+def multi_pdb_to_mmcid(pdb_files_dir: str, out_dir: str = None, verbose: bool = False):
+    """
+    Convert multiple PDB to mmCIF format in one run.
+
+    Parameters
+    ----------
+    dir_with_pdb_files : str
+        Path to directory with multiple PDB input files.
+    out_dir : str
+        Output directory for mmCIF files.
+    verbose : bool
+        Verbose output.
+    """
+    out_dir = Path(out_dir) or Path.cwd()
+    if out_dir.is_dir() is False:
+        out_dir.mkdir()
+    for file in Path(pdb_files_dir).iterdir():
+        file_path = Path(file.stem + ".cif")
+        if file.suffix == ".pdb":
+            pdb_to_mmcif(
+                pdb_file=str(file),
+                cif_file=out_dir / file_path,
+                verbose=verbose,
+            )
 
 
 def main():
