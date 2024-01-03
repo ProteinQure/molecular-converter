@@ -2,7 +2,7 @@
 
 Welcome to the PQ pair programming exercise!
 
-You & your partner have 90min to work on the exercises below. Make sure to first carefully read this file as well as the `README.md` before getting started. The exercise is designed in a way that should leave plenty of time to finish all the tasks. Don't be surprised if you finish early!
+You & your partner have 60min to work on the exercises below. Make sure to first carefully read this file as well as the `README.md` before getting started. The exercise is designed in a way that should leave plenty of time to finish all the tasks. Don't be surprised if you finish early!
 
 Please use whatever IDE or developer tools that you would usually use in your day-to-day. We also encourage you to use any online resources and please feel free to use ChatGPT.
 
